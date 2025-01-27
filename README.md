@@ -1,70 +1,106 @@
-# browser-use-server MCP Server
+# Browser Use Server
 
-A Model Context Protocol server
-
-This is a TypeScript-based MCP server that implements a simple notes system. It demonstrates core MCP concepts by providing:
-
-- Resources representing text notes with URIs and metadata
-- Tools for creating new notes
-- Prompts for generating summaries of notes
+A Model Context Protocol server for browser automation using Python scripts. For use with Cline
 
 ## Features
 
-### Resources
-- List and access notes via `note://` URIs
-- Each note has a title, content and metadata
-- Plain text mime type for simple content access
+### Browser Operations
+- `take_screenshot`: Capture a screenshot of a webpage
+- `get_html`: Retrieve the HTML content of a webpage
+- `execute_js`: Execute JavaScript on a webpage
 
-### Tools
-- `create_note` - Create new text notes
-  - Takes title and content as required parameters
-  - Stores note in server state
+## Prerequisites
 
-### Prompts
-- `summarize_notes` - Generate a summary of all stored notes
-  - Includes all note contents as embedded resources
-  - Returns structured prompt for LLM summarization
-
-## Development
-
-Install dependencies:
+1. Install Miniconda or Anaconda
+2. Create a Conda environment:
 ```bash
-npm install
+conda create -n browser-use python=3.11
+conda activate browser-use
+pip install browser-use
 ```
 
-Build the server:
+3. Set required API keys as environment variables:
 ```bash
-npm run build
-```
-
-For development with auto-rebuild:
-```bash
-npm run watch
+export GEMINI_API_KEY=your_api_key
+export DEEPSEEK_API_KEY=your_api_key
 ```
 
 ## Installation
 
-To use with Claude Desktop, add the server config:
+1. Clone this repository
+2. Install dependencies:
+```bash
+npm install
+```
 
-On MacOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
-On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
+3. Build the server:
+```bash
+npm run build
+```
+
+## MCP Configuration
+
+Add the following configuration to your Cline MCP settings:
 
 ```json
-{
-  "mcpServers": {
-    "browser-use-server": {
-      "command": "/path/to/browser-use-server/build/index.js"
-    }
-  }
+"browser-use": {
+  "command": "node",
+  "args": [
+    "/home/YOUR_HOME/Documents/Cline/MCP/browser-use-server/build/index.js"
+  ],
+  "env": {
+    "GEMINI_API_KEY": "your_api_key",
+    "DEEPSEEK_API_KEY": "your_api_key"
+  },
+  "disabled": false,
+  "autoApprove": []
 }
 ```
 
-### Debugging
+Replace:
+- `YOUR_HOME` with your actual home directory name
+- `your_api_key` with your actual API keys
 
-Since MCP servers communicate over stdio, debugging can be challenging. We recommend using the [MCP Inspector](https://github.com/modelcontextprotocol/inspector), which is available as a package script:
+## Usage
 
+Run the server:
+```bash
+node build/index.js
+```
+
+The server will be available on stdio and supports the following operations:
+
+### Take Screenshot
+Parameters:
+- url: The webpage URL
+- selector: CSS selector for the element to capture
+
+### Get HTML
+Parameters:
+- url: The webpage URL
+- selector: CSS selector for the element to extract
+
+### Execute JavaScript
+Parameters:
+- url: The webpage URL
+- script: JavaScript code to execute
+
+## Configuration
+
+### Timeout
+Default timeout is 5 minutes (300000 ms). Modify the TIMEOUT constant in `build/index.js` to change this.
+
+## Error Handling
+The server provides detailed error messages for:
+- Python script execution failures
+- Browser operation timeouts
+- Invalid parameters
+
+## Debugging
+Use the MCP Inspector for debugging:
 ```bash
 npm run inspector
 ```
 
-The Inspector will provide a URL to access debugging tools in your browser.
+## License
+MIT
