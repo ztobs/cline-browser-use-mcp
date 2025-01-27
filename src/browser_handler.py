@@ -16,13 +16,13 @@ load_dotenv()
 
 async def handle_command(command, args):
     """Handle different browser commands"""
-    print("[DEBUG] Starting command handling")
+    
     api_key = os.getenv('GEMINI_API_KEY')
     print(f"[DEBUG] Got API key: {'Yes' if api_key else 'No'}")
     if not api_key:
         return {
             'success': False,
-            'error': 'GEMINI_API_KEY is not set'
+            'error': 'API_KEY is not set'
         }
 
     # DeepSeek implementation (commented out)
@@ -39,18 +39,11 @@ async def handle_command(command, args):
     # )
 
     # Gemini implementation (active)
-    print("[DEBUG] Initializing Gemini LLM")
-    try:
-        llm = ChatGoogleGenerativeAI(
-            model='gemini-2.0-flash-exp',
-            api_key=SecretStr(api_key),
-        )
-        print("[DEBUG] LLM initialized successfully")
-    except Exception as e:
-        print(f"[DEBUG] Error initializing LLM: {str(e)}")
-        raise
+    llm = ChatGoogleGenerativeAI(
+        model='gemini-2.0-flash-exp',
+        api_key=SecretStr(api_key),
+    )
 
-    print("[DEBUG] Configuring browser")
     # Configure browser with longer timeouts
     context_config = BrowserContextConfig(
         minimum_wait_page_load_time=2.0,
