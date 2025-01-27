@@ -17,7 +17,7 @@ load_dotenv()
 async def handle_command(command, args):
     """Handle different browser commands"""
     
-    api_key = os.getenv('GEMINI_API_KEY')
+    api_key = os.getenv('DEEPSEEK_API_KEY')
     print(f"[DEBUG] Got API key: {'Yes' if api_key else 'No'}")
     if not api_key:
         return {
@@ -26,23 +26,17 @@ async def handle_command(command, args):
         }
 
     # DeepSeek implementation (commented out)
-    # api_key = os.getenv('DEEPSEEK_API_KEY')
-    # if not api_key:
-    #     return {
-    #         'success': False,
-    #         'error': 'DEEPSEEK_API_KEY is not set'
-    #     }
-    # llm = ChatOpenAI(
-    #     base_url='https://api.deepseek.com/v1',
-    #     model='deepseek-reasoner',
-    #     api_key=SecretStr(api_key),
-    # )
-
-    # Gemini implementation (active)
-    llm = ChatGoogleGenerativeAI(
-        model='gemini-2.0-flash-exp',
+    llm = ChatOpenAI(
+        base_url='https://api.deepseek.com/v1',
+        model='deepseek-chat',
         api_key=SecretStr(api_key),
     )
+
+    # Gemini implementation (active)
+    # llm = ChatGoogleGenerativeAI(
+    #     model='gemini-2.0-flash-exp',
+    #     api_key=SecretStr(api_key),
+    # )
 
     # Configure browser with longer timeouts
     context_config = BrowserContextConfig(
