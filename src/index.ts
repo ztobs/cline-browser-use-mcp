@@ -228,8 +228,12 @@ class BrowserUseServer {
             content: [
               {
                 type: 'text',
-                text: `Screenshot captured successfully. Data: ${result.screenshot.substring(0, 100)}...`
-              }
+                text: JSON.stringify({
+                  status: `Screenshot successful.`,
+                  path: result.filepath,
+                  screenshot: 'Data: ' + result.screenshot
+                })
+              },
             ],
           };
         } else if (request.params.name === 'get_html') {

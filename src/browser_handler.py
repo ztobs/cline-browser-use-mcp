@@ -10,14 +10,20 @@ import base64
 import sys
 import asyncio
 import os
+import time
 
 # Load environment variables from .env file
 load_dotenv()
 
+SCREENSHOT_DIR = os.path.join('.', 'screenshots')
+
 async def handle_command(command, args):
     """Handle different browser commands"""
-    
-    api_key = os.getenv('DEEPSEEK_API_KEY')
+
+    # Ensure screenshot directory exists
+    os.makedirs(SCREENSHOT_DIR, exist_ok=True)
+
+    api_key = os.getenv('GEMINI_API_KEY')
     print(f"[DEBUG] Got API key: {'Yes' if api_key else 'No'}")
     if not api_key:
         return {
@@ -25,24 +31,24 @@ async def handle_command(command, args):
             'error': 'API_KEY is not set'
         }
 
-    # DeepSeek implementation (commented out)
-    llm = ChatOpenAI(
-        base_url='https://api.deepseek.com/v1',
-        model='deepseek-chat',
-        api_key=SecretStr(api_key),
-    )
-
-    # Gemini implementation (active)
-    # llm = ChatGoogleGenerativeAI(
-    #     model='gemini-2.0-flash-exp',
+    # DeepSeek implementation (commented out) DEEPSEEK_API_KEY
+    # llm = ChatOpenAI(
+    #     base_url='https://api.deepseek.com/v1',
+    #     model='deepseek-chat',
     #     api_key=SecretStr(api_key),
     # )
 
+    # Gemini implementation (active) GEMINI_API_KEY
+    llm = ChatGoogleGenerativeAI(
+        model='gemini-2.0-flash-exp',
+        api_key=SecretStr(api_key),
+    )
+
     # Configure browser with longer timeouts
     context_config = BrowserContextConfig(
-        minimum_wait_page_load_time=2.0,
-        wait_for_network_idle_page_load_time=5.0,
-        maximum_wait_page_load_time=120.0
+        # minimum_wait_page_load_time=2.0,
+        # wait_for_network_idle_page_load_time=5.0,
+        # maximum_wait_page_load_time=120.0
     )
     config = BrowserConfig(
         headless=True,
@@ -78,10 +84,19 @@ async def handle_command(command, args):
             context = await browser.new_context()
             try:
                 await context.navigate_to(args['url'])
-                screenshot = await context.take_screenshot(full_page=args.get('full_page', False))
+                screenshot_base64 = await context.take_screenshot(full_page=args.get('full_page', False))
+                filename = f"screenshot_{int(time.time())}.png"
+                filepath = os.path.join(SCREENSHOT_DIR, filename)
+                
+                # Decode base64 and save image
+                screenshot_bytes = base64.b64decode(screenshot_base64)
+                with open(filepath, 'wb') as f:
+                    f.write(screenshot_bytes)
+                    
                 return {
                     'success': True,
-                    'screenshot': screenshot
+                    'screenshot': screenshot_base64, # Keep base64 for potential direct display
+                    'filepath': os.path.abspath(filepath) # Include full file path in response
                 }
             finally:
                 await context.close()
