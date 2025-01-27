@@ -138,6 +138,10 @@ class BrowserUseServer {
                 description: 'Whether to capture the full page or just the viewport',
                 default: false,
               },
+              steps: {
+                type: 'string',
+                description: 'Comma-separated actions or sentences describing steps to take after page load (e.g., "click #submit, scroll down" or "Fill the login form and submit")',
+              },
             },
             required: ['url'],
           },
@@ -151,6 +155,10 @@ class BrowserUseServer {
               url: {
                 type: 'string',
                 description: 'The URL to navigate to',
+              },
+              steps: {
+                type: 'string',
+                description: 'Comma-separated actions or sentences describing steps to take after page load (e.g., "click #submit, scroll down" or "Fill the login form and submit")',
               },
             },
             required: ['url'],
@@ -169,6 +177,10 @@ class BrowserUseServer {
               script: {
                 type: 'string',
                 description: 'The JavaScript code to execute',
+              },
+              steps: {
+                type: 'string',
+                description: 'Comma-separated actions or sentences describing steps to take after page load (e.g., "click #submit, scroll down" or "Fill the login form and submit")',
               },
             },
             required: ['url', 'script'],

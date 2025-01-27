@@ -70,7 +70,14 @@ async def handle_command(command, args):
                     'error': 'URL is required for screenshot command'
                 }
             
-            task = f"1. Go to {args['url']}\n2. Take a screenshot"
+            task = f"1. Go to {args['url']}"
+            if args.get('steps'):
+                steps = args['steps'].split(',')
+                for i, step in enumerate(steps, 2):
+                    task += f"\n{i}. {step.strip()}"
+                task += f"\n{len(steps) + 2}. Take a screenshot"
+            else:
+                task += "\n2. Take a screenshot"
             if args.get('full_page'):
                 task += " of the full page"
             
@@ -99,7 +106,14 @@ async def handle_command(command, args):
                     'error': 'URL is required for get_html command'
                 }
                 
-            task = f"1. Go to {args['url']}\n2. Get the page HTML"
+            task = f"1. Go to {args['url']}"
+            if args.get('steps'):
+                steps = args['steps'].split(',')
+                for i, step in enumerate(steps, 2):
+                    task += f"\n{i}. {step.strip()}"
+                task += f"\n{len(steps) + 2}. Get the page HTML"
+            else:
+                task += "\n2. Get the page HTML"
             agent = Agent(task=task, llm=llm, use_vision=False, browser=browser)
             await agent.run()
             
@@ -122,7 +136,14 @@ async def handle_command(command, args):
                     'error': 'URL and script are required for execute_js command'
                 }
                 
-            task = f"1. Go to {args['url']}\n2. Execute JavaScript: {args['script']}"
+            task = f"1. Go to {args['url']}"
+            if args.get('steps'):
+                steps = args['steps'].split(',')
+                for i, step in enumerate(steps, 2):
+                    task += f"\n{i}. {step.strip()}"
+                task += f"\n{len(steps) + 2}. Execute JavaScript: {args['script']}"
+            else:
+                task += f"\n2. Execute JavaScript: {args['script']}"
             agent = Agent(task=task, llm=llm, use_vision=False, browser=browser)
             await agent.run()
             
