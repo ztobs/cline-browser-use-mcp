@@ -56,11 +56,23 @@ async def handle_command(command, args):
         viewport_expansion=500,
         # allowed_domains=['google.com', 'wikipedia.org'],
     )
-    config = BrowserConfig(
-        headless=True,
-        disable_security=True,
-        new_context_config=context_config
-    )
+    
+    # Check if running under xvfb-run
+    running_under_xvfb = os.getenv('RUNNING_UNDER_XVFB') == 'true'
+    
+    config_args = {
+        'headless': True,
+        'disable_security': True,
+        'new_context_config': context_config
+    }
+    
+    # Only include chrome_instance_path when running under xvfb
+    if running_under_xvfb:
+        config_args['chrome_instance_path'] = '/usr/bin/google-chrome'
+        config_args['headless'] = False
+
+    
+    config = BrowserConfig(**config_args)
     browser = Browser(config=config)
     context = await browser.new_context()
     
