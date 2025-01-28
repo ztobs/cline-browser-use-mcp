@@ -2,3 +2,6 @@ node_modules/
 build/
 *.log
 .env*
+pnpm-lock.yaml
+generated/cookies.json
+generated/recordings/

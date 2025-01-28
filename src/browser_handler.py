@@ -46,15 +46,23 @@ async def handle_command(command, args):
 
     # Configure browser with longer timeouts
     context_config = BrowserContextConfig(
-        # minimum_wait_page_load_time=2.0,
-        # wait_for_network_idle_page_load_time=5.0,
-        # maximum_wait_page_load_time=120.0
+        save_recording_path="../generated/recordings/",
+        cookies_file="../generated/cookies.json",
+        wait_for_network_idle_page_load_time=3.0,
+        browser_window_size={'width': 1280, 'height': 1100},
+        locale='en-US',
+        user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.102 Safari/537.36',
+        highlight_elements=True,
+        viewport_expansion=500,
+        # allowed_domains=['google.com', 'wikipedia.org'],
     )
     config = BrowserConfig(
         headless=True,
         new_context_config=context_config
     )
     browser = Browser(config=config)
+    context = await browser.new_context()
+    
     try:
         if command == 'screenshot':
             if not args.get('url'):
@@ -75,15 +83,14 @@ async def handle_command(command, args):
                 task += " of the full page"
             
             print(f"[DEBUG] Creating agent for task: {task}")
-            agent = Agent(task=task, llm=llm, use_vision=False, browser=browser)
+            agent = Agent(task=task, llm=llm, use_vision=False, browser_context=context)
             print("[DEBUG] Running agent")
             await agent.run()
             print("[DEBUG] Agent run completed")
             
             # Get the screenshot from the browser context
-            context = await browser.new_context()
             try:
-                await context.navigate_to(args['url'])
+                # await context.navigate_to(args['url'])
                 screenshot_base64 = await context.take_screenshot(full_page=args.get('full_page', False))
                 filename = f"screenshot_{int(time.time())}.png"
                 filepath = os.path.join(SCREENSHOT_DIR, filename)
@@ -116,13 +123,10 @@ async def handle_command(command, args):
                 task += f"\n{len(steps) + 2}. Get the page HTML"
             else:
                 task += "\n2. Get the page HTML"
-            agent = Agent(task=task, llm=llm, use_vision=False, browser=browser)
+            agent = Agent(task=task, llm=llm, use_vision=False, browser_context=context)
             await agent.run()
             
-            # Get the HTML from the browser context
-            context = await browser.new_context()
             try:
-                await context.navigate_to(args['url'])
                 html = await context.get_page_html()
                 return {
                     'success': True,
@@ -146,13 +150,10 @@ async def handle_command(command, args):
                 task += f"\n{len(steps) + 2}. Execute JavaScript: {args['script']}"
             else:
                 task += f"\n2. Execute JavaScript: {args['script']}"
-            agent = Agent(task=task, llm=llm, use_vision=False, browser=browser)
+            agent = Agent(task=task, llm=llm, use_vision=False, browser_context=context)
             await agent.run()
 
-            # Execute JavaScript in the browser context
-            context = await browser.new_context()
             try:
-                await context.navigate_to(args['url'])
                 result = await context.execute_javascript(args['script'])
                 return {
                     'success': True,
@@ -179,13 +180,10 @@ async def handle_command(command, args):
                 task += f"\n{len(steps) + 2}. Get the console logs"
             else:
                 task += f"\n2. Get the console logs"
-            agent = Agent(task=task, llm=llm, use_vision=False, browser=browser)
+            agent = Agent(task=task, llm=llm, use_vision=False, browser_context=context)
             await agent.run()
 
-            # Get console logs from the browser context
-            context = await browser.new_context()
             try:
-                await context.navigate_to(args['url'])
                 # Execute JavaScript to get console logs
                 await context.execute_javascript("""
                     window._consoleLogs = [];
