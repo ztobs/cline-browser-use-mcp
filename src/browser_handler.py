@@ -58,6 +58,7 @@ async def handle_command(command, args):
     )
     config = BrowserConfig(
         headless=True,
+        disable_security=True,
         new_context_config=context_config
     )
     browser = Browser(config=config)
