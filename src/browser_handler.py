@@ -31,14 +31,14 @@ async def handle_command(command, args):
             'error': 'API_KEY is not set'
         }
 
-    # DeepSeek implementation (commented out) DEEPSEEK_API_KEY
+    # DeepSeek implementation DEEPSEEK_API_KEY
     # llm = ChatOpenAI(
     #     base_url='https://api.deepseek.com/v1',
     #     model='deepseek-chat',
     #     api_key=SecretStr(api_key),
     # )
 
-    # Gemini implementation (active) GEMINI_API_KEY
+    # Gemini implementation GEMINI_API_KEY
     llm = ChatGoogleGenerativeAI(
         model='gemini-2.0-flash-exp',
         api_key=SecretStr(api_key),
