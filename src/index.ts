@@ -64,8 +64,17 @@ class BrowserUseServer {
           DISPLAY: process.env.DISPLAY || ':0',
           XAUTHORITY: process.env.XAUTHORITY || `${process.env.HOME}/.Xauthority`,
           RUNNING_UNDER_XVFB: this.hasXvfb() ? 'true' : 'false',
+          // Pass all possible API keys
+          GLHF_API_KEY: process.env.GLHF_API_KEY,
+          GROQ_API_KEY: process.env.GROQ_API_KEY,
+          OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+          OPENROUTER_API_KEY: process.env.OPENROUTER_API_KEY,
+          GITHUB_API_KEY: process.env.GITHUB_API_KEY,
+          DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY,
           GEMINI_API_KEY: process.env.GEMINI_API_KEY,
-          DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY, // Keep for backwards compatibility
+          // Optional configuration overrides
+          MODEL: process.env.MODEL,
+          BASE_URL: process.env.BASE_URL,
         }
       });
 

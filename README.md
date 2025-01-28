@@ -37,11 +37,25 @@ conda activate browser-use
 pip install browser-use
 ```
 
-4. Set required API keys as environment variables:
+4. Set up LLM configuration:
+
+The server supports multiple LLM providers. You can use any of the following API keys:
 ```bash
-export GEMINI_API_KEY=your_api_key
+# Required: Set at least one of these API keys
+export GLHF_API_KEY=your_api_key
+export GROQ_API_KEY=your_api_key
+export OPENAI_API_KEY=your_api_key
+export OPENROUTER_API_KEY=your_api_key
+export GITHUB_API_KEY=your_api_key
 export DEEPSEEK_API_KEY=your_api_key
+export GEMINI_API_KEY=your_api_key
+
+# Optional: Override default configuration
+export MODEL=your_preferred_model  # Override the default model
+export BASE_URL=your_custom_url    # Override the default API endpoint
 ```
+
+The server will automatically use the first available API key it finds. You can optionally customize the model and base URL for any provider using the environment variables.
 
 ## Installation
 
@@ -67,8 +81,17 @@ Add the following configuration to your Cline MCP settings:
     "/home/YOUR_HOME/Documents/Cline/MCP/browser-use-server/build/index.js"
   ],
   "env": {
+    // Required: Set at least one API key
+    "GLHF_API_KEY": "your_api_key",
+    "GROQ_API_KEY": "your_api_key",
+    "OPENAI_API_KEY": "your_api_key",
+    "OPENROUTER_API_KEY": "your_api_key",
+    "GITHUB_API_KEY": "your_api_key",
+    "DEEPSEEK_API_KEY": "your_api_key",
     "GEMINI_API_KEY": "your_api_key",
-    "DEEPSEEK_API_KEY": "your_api_key"
+    // Optional: Configuration overrides
+    "MODEL": "your_preferred_model",
+    "BASE_URL": "your_custom_url"
   },
   "disabled": false,
   "autoApprove": []
@@ -110,7 +133,49 @@ Parameters:
 - url: The webpage URL (required)
 - steps: Comma-separated actions or sentences describing steps to take after page load (optional)
 
+## Example Cline Usage
+
+Here are some example tasks you can accomplish using the browser-use server with Cline:
+
+### Modifying Web Page Elements during Development
+To change the color of a heading on a page that requires authentication:
+```
+Change the colour of the headline with the text "Alle Foren im Überblick." to deep blue on https://localhost:3000/foren/ page
+
+To check/see the page, use browser-use MCP server to:
+Open https://localhost:3000/auth,
+Login with ztobs:Password123,
+Navigate to https://localhost:3000/foren/,
+Accept cookies if required
+
+hint: execute all browser actions in one command with multiple comma-separated steps
+```
+
+This task demonstrates:
+- Multi-step browser automation using comma-separated steps
+- Authentication handling
+- Cookie acceptance
+- DOM manipulation
+- CSS styling changes
+
+The server will execute these steps sequentially, handling any required interactions along the way.
+
 ## Configuration
+
+### LLM Configuration
+The server supports multiple LLM providers with their default configurations:
+
+- GLHF: Uses deepseek-ai/DeepSeek-V3 model
+- Groq: Uses deepseek-r1-distill-llama-70b model
+- OpenAI: Uses gpt-4o-mini model
+- Openrouter: Uses deepseek/deepseek-chat model
+- Github: Uses gpt-4o-mini model
+- DeepSeek: Uses deepseek-chat model
+- Gemini: Uses gemini-2.0-flash-exp model
+
+You can override these defaults using environment variables:
+- `MODEL`: Set a custom model name for any provider
+- `BASE_URL`: Set a custom API endpoint URL (if the provider supports it)
 
 ### Xvfb Support
 The server automatically detects if Xvfb is installed and:
@@ -131,6 +196,18 @@ The server provides detailed error messages for:
 Use the MCP Inspector for debugging:
 ```bash
 npm run inspector
+```
+
+## Citation
+
+```
+@software{browser_use2024,
+  author = {Müller, Magnus and Žunič, Gregor},
+  title = {Browser Use: Enable AI to control your browser},
+  year = {2024},
+  publisher = {GitHub},
+  url = {https://github.com/browser-use/browser-use}
+}
 ```
 
 ## License

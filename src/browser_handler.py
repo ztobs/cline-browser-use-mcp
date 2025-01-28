@@ -23,26 +23,86 @@ async def handle_command(command, args):
     # Ensure screenshot directory exists
     os.makedirs(SCREENSHOT_DIR, exist_ok=True)
 
-    api_key = os.getenv('GEMINI_API_KEY')
-    print(f"[DEBUG] Got API key: {'Yes' if api_key else 'No'}")
-    if not api_key:
+    # Define LLM configurations
+    llm_configs = {
+        'GLHF_API_KEY': {
+            'class': ChatOpenAI,
+            'params': {
+                'base_url': 'https://glhf.chat/api/openai/v1',
+                'model': 'deepseek-ai/DeepSeek-V3'
+            }
+        },
+        'GROQ_API_KEY': {
+            'class': ChatOpenAI,
+            'params': {
+                'base_url': 'https://api.groq.com/openai/v1',
+                'model': 'deepseek-r1-distill-llama-70b'
+            }
+        },
+        'OPENAI_API_KEY': {
+            'class': ChatOpenAI,
+            'params': {
+                'base_url': 'https://api.openai.com/v1',
+                'model': 'gpt-4o-mini'
+            }
+        },
+        'OPENROUTER_API_KEY': {
+            'class': ChatOpenAI,
+            'params': {
+                'base_url': 'https://openrouter.ai/api/v1',
+                'model': 'deepseek/deepseek-chat'
+            }
+        },
+        'GITHUB_API_KEY': {
+            'class': ChatOpenAI,
+            'params': {
+                'base_url': 'https://models.inference.ai.azure.com',
+                'model': 'gpt-4o-mini'
+            }
+        },
+        'DEEPSEEK_API_KEY': {
+            'class': ChatOpenAI,
+            'params': {
+                'base_url': 'https://api.deepseek.com/v1',
+                'model': 'deepseek-chat'
+            }
+        },
+        'GEMINI_API_KEY': {
+            'class': ChatGoogleGenerativeAI,
+            'params': {
+                'model': 'gemini-2.0-flash-exp'
+            }
+        }
+    }
+
+    # Check for available API keys and select the first one found
+    for env_key, config in llm_configs.items():
+        api_key = os.getenv(env_key)
+        if api_key:
+            print(f"[DEBUG] Using {env_key}")
+            llm_class = config['class']
+            params = config['params'].copy()  # Create a copy to avoid modifying the original
+            
+            # Check if MODEL env var is set and override the default model
+            custom_model = os.getenv('MODEL')
+            if custom_model:
+                print(f"[DEBUG] Using custom model: {custom_model}")
+                params['model'] = custom_model
+            
+            # Check if BASE_URL env var is set and override the default base_url
+            custom_base_url = os.getenv('BASE_URL')
+            if custom_base_url and 'base_url' in params:
+                print(f"[DEBUG] Using custom base URL: {custom_base_url}")
+                params['base_url'] = custom_base_url
+            
+            params['api_key'] = SecretStr(api_key)
+            llm = llm_class(**params)
+            break
+    else:
         return {
             'success': False,
-            'error': 'API_KEY is not set'
+            'error': 'No API key found. Please set one of the following environment variables: ' + ', '.join(llm_configs.keys())
         }
-
-    # DeepSeek implementation DEEPSEEK_API_KEY
-    # llm = ChatOpenAI(
-    #     base_url='https://api.deepseek.com/v1',
-    #     model='deepseek-chat',
-    #     api_key=SecretStr(api_key),
-    # )
-
-    # Gemini implementation GEMINI_API_KEY
-    llm = ChatGoogleGenerativeAI(
-        model='gemini-2.0-flash-exp',
-        api_key=SecretStr(api_key),
-    )
 
     # Configure browser with longer timeouts
     context_config = BrowserContextConfig(

@@ -5,3 +5,4 @@ build/
 pnpm-lock.yaml
 generated/cookies.json
 generated/recordings/
+screenshots/
