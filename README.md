@@ -2,6 +2,8 @@
 
 A Model Context Protocol server for browser automation using Python scripts. For use with Cline
 
+<a href="https://glama.ai/mcp/servers/0aqrsbhx3z"><img width="380" height="200" src="https://glama.ai/mcp/servers/0aqrsbhx3z/badge" alt="Browser Use Server MCP server" /></a>
+
 ## Features
 
 ### Browser Operations
