@@ -7,21 +7,37 @@ A Model Context Protocol server for browser automation using Python scripts. For
 ## Features
 
 ### Browser Operations
-- `take_screenshot`: Capture a screenshot of a webpage
+- `screenshot`: Capture a screenshot of a webpage (full page or viewport)
 - `get_html`: Retrieve the HTML content of a webpage
 - `execute_js`: Execute JavaScript on a webpage
+- `get_console_logs`: Get console logs from a webpage
+
+All operations support custom interaction steps (e.g., clicking elements, scrolling) after page load.
 
 ## Prerequisites
 
-1. Install Miniconda or Anaconda
-2. Create a Conda environment:
+1. (Optional but recommended) Install Xvfb for headless browser automation:
+```bash
+# Ubuntu/Debian
+sudo apt-get install xvfb
+
+# CentOS/RHEL
+sudo yum install xorg-x11-server-Xvfb
+
+# Arch Linux
+sudo pacman -S xorg-server-xvfb
+```
+Xvfb (X Virtual Frame Buffer) creates a virtual display, allowing browser automation without detection as a bot. Learn more about Xvfb [here](https://www.x.org/releases/X11R7.6/doc/man/man1/Xvfb.1.xhtml).
+
+2. Install Miniconda or Anaconda
+3. Create a Conda environment:
 ```bash
 conda create -n browser-use python=3.11
 conda activate browser-use
 pip install browser-use
 ```
 
-3. Set required API keys as environment variables:
+4. Set required API keys as environment variables:
 ```bash
 export GEMINI_API_KEY=your_api_key
 export DEEPSEEK_API_KEY=your_api_key
@@ -72,22 +88,35 @@ node build/index.js
 
 The server will be available on stdio and supports the following operations:
 
-### Take Screenshot
+### Screenshot
 Parameters:
-- url: The webpage URL
-- selector: CSS selector for the element to capture
+- url: The webpage URL (required)
+- full_page: Whether to capture the full page or just the viewport (optional, default: false)
+- steps: Comma-separated actions or sentences describing steps to take after page load (optional)
 
 ### Get HTML
 Parameters:
-- url: The webpage URL
-- selector: CSS selector for the element to extract
+- url: The webpage URL (required)
+- steps: Comma-separated actions or sentences describing steps to take after page load (optional)
 
 ### Execute JavaScript
 Parameters:
-- url: The webpage URL
-- script: JavaScript code to execute
+- url: The webpage URL (required)
+- script: JavaScript code to execute (required)
+- steps: Comma-separated actions or sentences describing steps to take after page load (optional)
+
+### Get Console Logs
+Parameters:
+- url: The webpage URL (required)
+- steps: Comma-separated actions or sentences describing steps to take after page load (optional)
 
 ## Configuration
+
+### Xvfb Support
+The server automatically detects if Xvfb is installed and:
+- Uses xvfb-run when available, enabling better browser automation without bot detection
+- Falls back to direct execution when Xvfb is not installed
+- Sets RUNNING_UNDER_XVFB environment variable accordingly
 
 ### Timeout
 Default timeout is 5 minutes (300000 ms). Modify the TIMEOUT constant in `build/index.js` to change this.

@@ -7,7 +7,7 @@ import {
   ListToolsRequestSchema,
   McpError,
 } from '@modelcontextprotocol/sdk/types.js';
-import { spawn } from 'child_process';
+import { spawn, spawnSync } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -43,13 +43,27 @@ class BrowserUseServer {
     });
   }
 
+  private hasXvfb(): boolean {
+    const result = spawnSync('which', ['xvfb-run']);
+    return result.status === 0;
+  }
+
   private runPythonScript(args: object): Promise<any> {
     return new Promise((resolve, reject) => {
       const pythonScript = path.join(__dirname, 'browser_handler.py');
-      const pythonProcess = spawn('conda', ['run', '-n', 'browser-use', 'python', pythonScript, JSON.stringify(args)], {
+      const hasXvfb = this.hasXvfb();
+      const command = hasXvfb ? 'xvfb-run' : 'conda';
+      const commandArgs = hasXvfb 
+        ? ['--auto-servernum', 'conda', 'run', '-n', 'browser-use', 'python', pythonScript, JSON.stringify(args)]
+        : ['run', '-n', 'browser-use', 'python', pythonScript, JSON.stringify(args)];
+      
+      const pythonProcess = spawn(command, commandArgs, {
         env: {
           ...process.env,
           PYTHONUNBUFFERED: '1',
+          DISPLAY: process.env.DISPLAY || ':0',
+          XAUTHORITY: process.env.XAUTHORITY || `${process.env.HOME}/.Xauthority`,
+          RUNNING_UNDER_XVFB: this.hasXvfb() ? 'true' : 'false',
           GEMINI_API_KEY: process.env.GEMINI_API_KEY,
           DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY, // Keep for backwards compatibility
         }
@@ -249,7 +263,7 @@ class BrowserUseServer {
                 text: JSON.stringify({
                   status: `Screenshot successful.`,
                   path: result.filepath,
-                  screenshot: 'Data: ' + result.screenshot
+                  // screenshot: 'Data: ' + result.screenshot
                 })
               },
             ],
