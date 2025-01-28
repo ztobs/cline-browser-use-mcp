@@ -137,7 +137,7 @@ async def handle_command(command, args):
                     'success': False,
                     'error': 'URL and script are required for execute_js command'
                 }
-                
+
             task = f"1. Go to {args['url']}"
             if args.get('steps'):
                 steps = args['steps'].split(',')
@@ -148,7 +148,7 @@ async def handle_command(command, args):
                 task += f"\n2. Execute JavaScript: {args['script']}"
             agent = Agent(task=task, llm=llm, use_vision=False, browser=browser)
             await agent.run()
-            
+
             # Execute JavaScript in the browser context
             context = await browser.new_context()
             try:
@@ -160,7 +160,57 @@ async def handle_command(command, args):
                 }
             finally:
                 await context.close()
+        elif command == 'get_console_logs':
+            if not args.get('url'):
+                return {
+                    'success': False,
+                    'error': 'URL is required for get_console_logs command'
+                }
+
+            console_messages = []
+            def on_console_message(msg):
+                console_messages.append(f"type: {msg.type}, text: {msg.text}, location: {msg.location}")
+
+            task = f"1. Go to {args['url']}"
+            if args.get('steps'):
+                steps = args['steps'].split(',')
+                for i, step in enumerate(steps, 2):
+                    task += f"\n{i}. {step.strip()}"
+                task += f"\n{len(steps) + 2}. Get the console logs"
+            else:
+                task += f"\n2. Get the console logs"
+            agent = Agent(task=task, llm=llm, use_vision=False, browser=browser)
+            await agent.run()
+
+            # Get console logs from the browser context
+            context = await browser.new_context()
+            try:
+                await context.navigate_to(args['url'])
+                # Execute JavaScript to get console logs
+                await context.execute_javascript("""
+                    window._consoleLogs = [];
+                    const originalConsole = window.console;
+                    ['log', 'info', 'warn', 'error'].forEach(level => {
+                        window.console[level] = (...args) => {
+                            window._consoleLogs.push({type: level, text: args.join(' ')});
+                            originalConsole[level](...args);
+                        };
+                    });
+                """)
                 
+                # Wait a bit for any console logs to be captured
+                await asyncio.sleep(1)
+                
+                # Get the captured logs
+                logs = await context.execute_javascript("window._consoleLogs")
+                return {
+                    'success': True,
+                    'logs': logs
+                }
+            finally:
+                await context.close()
+
+
         else:
             return {
                 'success': False,
@@ -173,7 +223,7 @@ async def main():
     # Read command line arguments as JSON
     args = json.loads(sys.argv[1])
     command = args.get('command')
-    
+
     try:
         result = await handle_command(command, args)
     except Exception as e:
@@ -181,7 +231,7 @@ async def main():
             'success': False,
             'error': str(e)
         }
-        
+
     # Output result as JSON
     print(json.dumps(result))
 

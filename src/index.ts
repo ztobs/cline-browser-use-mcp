@@ -186,11 +186,29 @@ class BrowserUseServer {
             required: ['url', 'script'],
           },
         },
+        {
+          name: 'get_console_logs',
+          description: 'Get the console logs of a webpage',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              url: {
+                type: 'string',
+                description: 'The URL to navigate to',
+              },
+              steps: {
+                type: 'string',
+                description: 'Comma-separated actions or sentences describing steps to take after page load (e.g., "click #submit, scroll down" or "Fill the login form and submit")',
+              },
+            },
+            required: ['url'],
+          },
+        },
       ],
     }));
 
     this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
-      const validCommands = ['screenshot', 'get_html', 'execute_js'];
+      const validCommands = ['screenshot', 'get_html', 'execute_js', 'get_console_logs'];
       if (!validCommands.includes(request.params.name)) {
         throw new McpError(
           ErrorCode.MethodNotFound,
@@ -242,6 +260,15 @@ class BrowserUseServer {
               {
                 type: 'text',
                 text: result.html,
+              },
+            ],
+          };
+        } else if (request.params.name === 'get_console_logs') {
+          return {
+            content: [
+              {
+                type: 'text',
+                text: JSON.stringify(result.logs, null, 2),
               },
             ],
           };
