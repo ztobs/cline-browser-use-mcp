@@ -1,0 +1,47 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - glhfApiKey
+      - groqApiKey
+      - openaiApiKey
+      - openrouterApiKey
+      - githubApiKey
+      - deepseekApiKey
+      - geminiApiKey
+    properties:
+      glhfApiKey:
+        type: string
+        description: The API key for GLHF.
+      groqApiKey:
+        type: string
+        description: The API key for Groq.
+      openaiApiKey:
+        type: string
+        description: The API key for OpenAI.
+      openrouterApiKey:
+        type: string
+        description: The API key for OpenRouter.
+      githubApiKey:
+        type: string
+        description: The API key for GitHub.
+      deepseekApiKey:
+        type: string
+        description: The API key for DeepSeek.
+      geminiApiKey:
+        type: string
+        description: The API key for Gemini.
+      model:
+        type: string
+        description: "Optional: Override the default model."
+      baseUrl:
+        type: string
+        description: "Optional: Override the default API endpoint."
+  commandFunction:
+    # A function that produces the CLI command to start the MCP on stdio.
+    |-
+    (config) => ({command:'node', args:['build/index.js'], env:{GLHF_API_KEY:config.glhfApiKey, GROQ_API_KEY:config.groqApiKey, OPENAI_API_KEY:config.openaiApiKey, OPENROUTER_API_KEY:config.openrouterApiKey, GITHUB_API_KEY:config.githubApiKey, DEEPSEEK_API_KEY:config.deepseekApiKey, GEMINI_API_KEY:config.geminiApiKey, MODEL:config.model, BASE_URL:config.baseUrl}})
