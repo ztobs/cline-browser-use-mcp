@@ -1,5 +1,7 @@
 # Browser Use Server
 
+[![smithery badge](https://smithery.ai/badge/@ztobs/cline-browser-use-mcp)](https://smithery.ai/server/@ztobs/cline-browser-use-mcp)
+
 A Model Context Protocol server for browser automation using Python scripts. For use with Cline
 
 <a href="https://glama.ai/mcp/servers/0aqrsbhx3z"><img width="380" height="200" src="https://glama.ai/mcp/servers/0aqrsbhx3z/badge" alt="Browser Use Server MCP server" /></a>
@@ -58,6 +60,14 @@ export BASE_URL=your_custom_url    # Override the default API endpoint
 The server will automatically use the first available API key it finds. You can optionally customize the model and base URL for any provider using the environment variables.
 
 ## Installation
+
+### Installing via Smithery
+
+To install Browser Use Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@ztobs/cline-browser-use-mcp):
+
+```bash
+npx -y @smithery/cli install @ztobs/cline-browser-use-mcp --client claude
+```
 
 1. Clone this repository
 2. Install dependencies:
