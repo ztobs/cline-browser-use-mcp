@@ -73,6 +73,7 @@ class BrowserUseServer {
           DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY,
           GEMINI_API_KEY: process.env.GEMINI_API_KEY,
           OLLAMA_API_KEY: process.env.OLLAMA_API_KEY,
+          USE_VISION: process.env.USE_VISION || 'false',
           // Optional configuration overrides
           MODEL: process.env.MODEL,
           BASE_URL: process.env.BASE_URL,

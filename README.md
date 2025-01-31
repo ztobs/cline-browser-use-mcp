@@ -51,10 +51,12 @@ export OPENROUTER_API_KEY=your_api_key
 export GITHUB_API_KEY=your_api_key
 export DEEPSEEK_API_KEY=your_api_key
 export GEMINI_API_KEY=your_api_key
+export OLLAMA_API_KEY=your_api_key
 
 # Optional: Override default configuration
 export MODEL=your_preferred_model  # Override the default model
 export BASE_URL=your_custom_url    # Override the default API endpoint
+export USE_VISION=false  # Enable/disable vision capabilities (default: false)
 ```
 
 The server will automatically use the first available API key it finds. You can optionally customize the model and base URL for any provider using the environment variables.
@@ -99,9 +101,11 @@ Add the following configuration to your Cline MCP settings:
     "GITHUB_API_KEY": "your_api_key",
     "DEEPSEEK_API_KEY": "your_api_key",
     "GEMINI_API_KEY": "your_api_key",
+    "OLLAMA_API_KEY": "your_api_key",
     // Optional: Configuration overrides
     "MODEL": "your_preferred_model",
-    "BASE_URL": "your_custom_url"
+    "BASE_URL": "your_custom_url",
+    "USE_VISION": "false"
   },
   "disabled": false,
   "autoApprove": []
@@ -176,6 +180,7 @@ The server will execute these steps sequentially, handling any required interact
 The server supports multiple LLM providers with their default configurations:
 
 - GLHF: Uses deepseek-ai/DeepSeek-V3 model
+- Ollama: Uses qwen2.5:32b-instruct-q4_K_M model with 32k context window
 - Groq: Uses deepseek-r1-distill-llama-70b model
 - OpenAI: Uses gpt-4o-mini model
 - Openrouter: Uses deepseek/deepseek-chat model
@@ -186,6 +191,12 @@ The server supports multiple LLM providers with their default configurations:
 You can override these defaults using environment variables:
 - `MODEL`: Set a custom model name for any provider
 - `BASE_URL`: Set a custom API endpoint URL (if the provider supports it)
+
+### Vision Support
+The server supports vision capabilities through the USE_VISION environment variable:
+- Set USE_VISION=true to enable vision capabilities for browser operations
+- Default is false to optimize performance when vision is not needed
+- Useful for tasks that require visual understanding of webpage content
 
 ### Xvfb Support
 The server automatically detects if Xvfb is installed and:

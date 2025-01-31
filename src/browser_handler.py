@@ -165,7 +165,8 @@ async def handle_command(command, args):
                 task += " of the full page"
             
             print(f"[DEBUG] Creating agent for task: {task}")
-            agent = Agent(task=task, llm=llm, use_vision=False, browser_context=context)
+            use_vision = os.getenv('USE_VISION', 'false').lower() == 'true'
+            agent = Agent(task=task, llm=llm, use_vision=use_vision, browser_context=context)
             print("[DEBUG] Running agent")
             await agent.run()
             print("[DEBUG] Agent run completed")
@@ -205,7 +206,8 @@ async def handle_command(command, args):
                 task += f"\n{len(steps) + 2}. Get the page HTML"
             else:
                 task += "\n2. Get the page HTML"
-            agent = Agent(task=task, llm=llm, use_vision=False, browser_context=context)
+            use_vision = os.getenv('USE_VISION', 'false').lower() == 'true'
+            agent = Agent(task=task, llm=llm, use_vision=use_vision, browser_context=context)
             await agent.run()
             
             try:
@@ -232,7 +234,8 @@ async def handle_command(command, args):
                 task += f"\n{len(steps) + 2}. Execute JavaScript: {args['script']}"
             else:
                 task += f"\n2. Execute JavaScript: {args['script']}"
-            agent = Agent(task=task, llm=llm, use_vision=False, browser_context=context)
+            use_vision = os.getenv('USE_VISION', 'false').lower() == 'true'
+            agent = Agent(task=task, llm=llm, use_vision=use_vision, browser_context=context)
             await agent.run()
 
             try:
@@ -262,7 +265,8 @@ async def handle_command(command, args):
                 task += f"\n{len(steps) + 2}. Get the console logs"
             else:
                 task += f"\n2. Get the console logs"
-            agent = Agent(task=task, llm=llm, use_vision=False, browser_context=context)
+            use_vision = os.getenv('USE_VISION', 'false').lower() == 'true'
+            agent = Agent(task=task, llm=llm, use_vision=use_vision, browser_context=context)
             await agent.run()
 
             try:
