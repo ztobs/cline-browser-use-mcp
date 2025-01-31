@@ -1,6 +1,7 @@
 from browser_use import Agent, Browser
 from langchain_openai import ChatOpenAI
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_ollama import ChatOllama
 from pydantic import SecretStr
 from browser_use.browser.browser import BrowserConfig
 from browser_use.browser.context import BrowserContextConfig
@@ -25,6 +26,14 @@ async def handle_command(command, args):
 
     # Define LLM configurations
     llm_configs = {
+        'OLLAMA_API_KEY': {
+            'class': ChatOllama,
+            'params': {
+                'base_url': 'http://localhost:11434',
+                'model': 'qwen2.5:32b-instruct-q4_K_M',
+                'num_ctx': 32000
+            }
+        },
         'GLHF_API_KEY': {
             'class': ChatOpenAI,
             'params': {
