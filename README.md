@@ -219,17 +219,9 @@ Use the MCP Inspector for debugging:
 npm run inspector
 ```
 
-## Citation
+## Uses
 
-```
-@software{browser_use2024,
-  author = {Müller, Magnus and Žunič, Gregor},
-  title = {Browser Use: Enable AI to control your browser},
-  year = {2024},
-  publisher = {GitHub},
-  url = {https://github.com/browser-use/browser-use}
-}
-```
+[Browser Use](https://github.com/browser-use/browser-use)
 
 ## License
 MIT
