@@ -36,7 +36,7 @@ Xvfb (X Virtual Frame Buffer) creates a virtual display, allowing browser automa
 ```bash
 conda create -n browser-use python=3.11
 conda activate browser-use
-pip install browser-use
+pip install -r requirements.txt
 ```
 
 4. Set up LLM configuration:
@@ -71,7 +71,7 @@ To install Browser Use Server for Claude Desktop automatically via [Smithery](ht
 npx -y @smithery/cli install @ztobs/cline-browser-use-mcp --client claude
 ```
 
-1. Clone this repository
+1. Clone this repository to `/home/YOUR_HOME/Documents/Cline/` directory
 2. Install dependencies:
 ```bash
 npm install
